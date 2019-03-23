@@ -4,7 +4,7 @@ import db from "../db/db";
 class UrlsController {
   getLongUrl(req, res) {
     if (!req.query.shortUrl) {
-      return res.status(400).send({
+      return res.status(400).json({
         success: "false",
         message: "shortUrl is required"
       });
@@ -16,9 +16,14 @@ class UrlsController {
     const base = alphabet.length;
 
     const shortUrl = req.query.shortUrl;
-    let shortCode = shortUrl.split("/");
-
-    shortCode = shortCode[shortCode.length - 1].trim();
+    if (!shortUrl.includes("www.koble.jobs/")) {
+      return res.status(400).json({
+        success: "false",
+        message: "shortUrl needs to contain 'www.koble.jobs/'"
+      });
+    }
+    const shortCodeArray = shortUrl.split("/");
+    const shortCode = shortCodeArray[shortCodeArray.length - 1].trim();
 
     let digits = [];
     for (let c in shortCode) {
@@ -34,7 +39,7 @@ class UrlsController {
 
     db.map(url => {
       if (url.id === id) {
-        return res.status(200).send({
+        return res.status(200).json({
           success: "true",
           message: "longUrl found from shortUrl",
           shortUrl: shortUrl,
@@ -43,7 +48,7 @@ class UrlsController {
       }
     });
 
-    return res.status(404).send({
+    return res.status(404).json({
       success: "false",
       message: "longUrl not found"
     });
@@ -51,9 +56,17 @@ class UrlsController {
 
   generateShortUrl(req, res) {
     if (!req.body.longUrl) {
-      return res.status(400).send({
+      return res.status(400).json({
         success: "false",
         message: "longUrl is required"
+      });
+    } else if (
+      !req.body.longUrl.includes("www.koble.co/companies/koble/postings/")
+    ) {
+      return res.status(400).json({
+        success: "false",
+        message:
+          "longUrl needs to contain 'www.koble.co/companies/koble/postings/'"
       });
     }
 
@@ -85,7 +98,7 @@ class UrlsController {
 
     s = s.split("").join("");
 
-    const shortUrl = "http://koble.jobs/" + s;
+    const shortUrl = "www.koble.jobs/" + s;
 
     if (!id) {
       const url = {
@@ -95,7 +108,7 @@ class UrlsController {
 
       db.push(url);
 
-      res.status(201).send({
+      res.status(201).json({
         success: "true",
         message: "Created entry for longUrl and made shortUrl",
         shortUrl,
@@ -103,7 +116,7 @@ class UrlsController {
       });
     }
 
-    res.status(201).send({
+    res.status(201).json({
       success: "true",
       message: "Found entry for longUrl and made shortUrl",
       shortUrl,
@@ -112,7 +125,7 @@ class UrlsController {
   }
 
   getAllUrls(req, res) {
-    return res.status(200).send({
+    return res.status(200).json({
       success: "true",
       message: "urls derived successfully",
       urls: db
