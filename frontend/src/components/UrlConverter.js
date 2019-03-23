@@ -61,7 +61,9 @@ class UrlConverter extends Component {
       <React.Fragment>
         <Typography component="div">
           <FormControl>
-            <InputLabel htmlFor="my-input">Long url</InputLabel>
+            <InputLabel htmlFor="my-input">
+              {this.props.longUrl ? "Input long url" : "Input short url"}
+            </InputLabel>
             <Input
               id="my-input"
               aria-describedby="my-helper-text"
