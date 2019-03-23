@@ -31,7 +31,21 @@ class UrlConverter extends Component {
       });
   }
 
-  getLongUrl() {}
+  getLongUrl() {
+    const url = `/api/v1/url?shortUrl=${this.input.current.value}`;
+    console.log(url);
+    fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+      .then(response => response.json())
+      .then(res => {
+        console.log(res);
+        this.setState({ shortUrl: res.shortUrl, longUrl: res.longUrl });
+      });
+  }
 
   handleSubmit(event) {
     event.preventDefault();
