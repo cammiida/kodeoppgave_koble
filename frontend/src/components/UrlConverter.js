@@ -25,15 +25,13 @@ class UrlConverter extends Component {
       body: JSON.stringify(body)
     })
       .then(response => response.json())
-      .then(res => {
-        console.log(res);
-        this.setState({ shortUrl: res.shortUrl, longUrl: res.longUrl });
-      });
+      .then(res =>
+        this.setState({ shortUrl: res.shortUrl, longUrl: res.longUrl })
+      );
   }
 
   getLongUrl() {
     const url = `/api/v1/url?shortUrl=${this.input.current.value}`;
-    console.log(url);
     fetch(url, {
       method: "GET",
       headers: {
@@ -41,10 +39,9 @@ class UrlConverter extends Component {
       }
     })
       .then(response => response.json())
-      .then(res => {
-        console.log(res);
-        this.setState({ shortUrl: res.shortUrl, longUrl: res.longUrl });
-      });
+      .then(res =>
+        this.setState({ shortUrl: res.shortUrl, longUrl: res.longUrl })
+      );
   }
 
   handleSubmit(event) {
@@ -72,8 +69,26 @@ class UrlConverter extends Component {
             <Button onClick={this.handleSubmit}>Submit</Button>
           </FormControl>
 
-          <p>Short Url: {this.state.shortUrl}</p>
-          <p>Long Url: {this.state.longUrl}</p>
+          <p>
+            Short Url:
+            <a
+              rel="noopener noreferrer"
+              target="_blank"
+              href={this.state.shortUrl}
+            >
+              {this.state.shortUrl}
+            </a>
+          </p>
+          <p>
+            Long Url:
+            <a
+              rel="noopener noreferrer"
+              target="_blank"
+              href={this.state.longUrl}
+            >
+              {this.state.longUrl}
+            </a>
+          </p>
         </Typography>
       </React.Fragment>
     );
