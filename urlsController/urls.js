@@ -14,7 +14,6 @@ class UrlsController {
       ""
     );
     const base = alphabet.length;
-    console.log("base: ", base);
 
     const shortUrl = req.query.shortUrl;
     let shortCode = shortUrl.split("/");
@@ -51,8 +50,6 @@ class UrlsController {
   }
 
   generateShortUrl(req, res) {
-    console.log("generateShortUrl");
-    console.log(req.body);
     if (!req.body.longUrl) {
       return res.status(400).send({
         success: "false",
@@ -82,7 +79,6 @@ class UrlsController {
     let num = tempId;
     let s = "";
     while (num > 0) {
-      console.log("num: ", num);
       s += alphabet[num % base];
       num = Math.floor(num / base);
     }
@@ -116,7 +112,6 @@ class UrlsController {
   }
 
   getAllUrls(req, res) {
-    console.log("getAllUrls");
     return res.status(200).send({
       success: "true",
       message: "urls derived successfully",
