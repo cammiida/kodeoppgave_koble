@@ -52,6 +52,7 @@ class UrlsController {
 
   generateShortUrl(req, res) {
     console.log("generateShortUrl");
+    console.log(req.body);
     if (!req.body.longUrl) {
       return res.status(400).send({
         success: "false",
