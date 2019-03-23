@@ -2,34 +2,56 @@
 import db from "../db/db";
 
 class UrlsController {
-  getAllUrls(req, res) {
-    return res.status(200).send({
-      success: "true",
-      message: "urls derived successfully",
-      urls: db
-    });
-  }
+  getLongUrl(req, res) {
+    if (!req.query.shortUrl) {
+      return res.status(400).send({
+        success: "false",
+        message: "shortUrl is required"
+      });
+    }
 
-  getUrl(req, res) {
-    const id = parseInt(req.params.id, 10);
+    const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".split(
+      ""
+    );
+    const base = alphabet.length;
+    console.log("base: ", base);
+
+    const shortUrl = req.query.shortUrl;
+    let shortCode = shortUrl.split("/");
+
+    shortCode = shortCode[shortCode.length - 1].trim();
+
+    let digits = [];
+    for (let c in shortCode) {
+      digits.push(alphabet.indexOf(shortCode[c]));
+    }
+
+    let power = 0;
+    let id = 0;
+    digits.forEach(value => {
+      id += value * Math.pow(base, power);
+      power++;
+    });
 
     db.map(url => {
       if (url.id === id) {
         return res.status(200).send({
           success: "true",
-          message: "url derived successfully",
-          url
+          message: "longUrl found from shortUrl",
+          shortUrl: shortUrl,
+          longUrl: url.longUrl
         });
       }
     });
 
-    return res.satus(404).send({
+    return res.status(404).send({
       success: "false",
-      message: "url does not exist"
+      message: "longUrl not found"
     });
   }
 
-  createUrl(req, res) {
+  generateShortUrl(req, res) {
+    console.log("generateShortUrl");
     if (!req.body.longUrl) {
       return res.status(400).send({
         success: "false",
@@ -37,83 +59,67 @@ class UrlsController {
       });
     }
 
-    console.log("req: ", req);
+    const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".split(
+      ""
+    );
+    const base = alphabet.length;
+    const longUrl = req.body.longUrl;
 
-    const url = {
-      id: db.length + 1,
-      shortUrl: req.body.shortUrl,
-      longUrl: req.body.longUrl
-    };
-
-    db.push(url);
-    return res.status(201).send({
-      success: "true",
-      message: "url successfully created"
-    });
-  }
-
-  updateUrl(req, res) {
-    const id = parseInt(req.params.id, 10);
-    let urlFound;
-    let itemIndex;
-    db.map((url, index) => {
-      if (url.id === id) {
-        urlFound = url;
-        itemIndex = index;
+    let id;
+    db.map(url => {
+      if (url.longUrl === longUrl) {
+        id = url.id;
       }
     });
 
-    if (!urlFound) {
-      return res.status(404).send({
-        success: "false",
-        message: "url not found"
+    let tempId = id;
+    if (!tempId) {
+      tempId = db.length + 1;
+      //tempId = 12873251;
+    }
+
+    let num = tempId;
+    let s = "";
+    while (num > 0) {
+      console.log("num: ", num);
+      s += alphabet[num % base];
+      num = Math.floor(num / base);
+    }
+
+    s = s.split("").join("");
+
+    const shortUrl = "http://koble.jobs/" + s;
+
+    if (!id) {
+      const url = {
+        id: tempId,
+        longUrl
+      };
+
+      db.push(url);
+
+      res.status(201).send({
+        success: "true",
+        message: "Created entry for longUrl and made shortUrl",
+        shortUrl,
+        longUrl
       });
     }
 
-    if (!req.body.longUrl && !req.body.shortUrl) {
-      return res.status(400).send({
-        success: "false",
-        message: "longUrl or shortUrl is required"
-      });
-    }
-
-    const newUrl = {
-      id: urlFound.id,
-      shortUrl: req.body.shortUrl || urlFound.shortUrl,
-      longUrl: req.body.longUrl || urlFound.longUrl
-    };
-
-    db.splice(itemIndex, 1, newUrl);
-
-    return res.status(201).send({
+    res.status(201).send({
       success: "true",
-      message: "url updated successfully",
-      newUrl
+      message: "Found entry for longUrl and made shortUrl",
+      shortUrl,
+      longUrl
     });
   }
 
-  deleteUrl(req, res) {
-    const id = parseInt(req.params.id, 10);
-    let urlFound;
-    let itemIndex;
-    db.map((url, index) => {
-      if (url.id === id) {
-        urlFound = url;
-        itemIndex = index;
-      }
-    });
-
-    if (!urlFound) {
-      return res.status(404).send({
-        success: "false",
-        message: "url not found"
-      });
-    }
-    db.splice(itemIndex, 1);
-
+  getAllUrls(req, res) {
+    console.log("getAllUrls");
     return res.status(200).send({
       success: "true",
-      message: "url deleted successfully"
+      message: "urls derived successfully",
+      urls: db
     });
   }
 }
