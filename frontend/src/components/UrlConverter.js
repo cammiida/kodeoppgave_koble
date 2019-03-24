@@ -19,7 +19,6 @@ class UrlConverter extends Component {
 
   generateShortUrl() {
     const body = { longUrl: this.input.current.value };
-    console.log(body);
     fetch("/api/v1/url", {
       method: "POST",
       headers: {
