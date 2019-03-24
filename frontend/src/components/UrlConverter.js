@@ -57,6 +57,13 @@ class UrlConverter extends Component {
 
   handleSubmit(event) {
     event.preventDefault();
+    if (this.input.current.value.includes("www.")) {
+      const tempValue = this.input.current.value.split("www.")[1];
+      this.input.current.value = tempValue;
+    } else if (this.input.current.value.includes("://")) {
+      const tempValue = this.input.current.value.split("://")[1];
+      this.input.current.value = tempValue;
+    }
     if (this.props.longUrl) {
       return this.generateShortUrl();
     } else if (this.props.shortUrl) {
