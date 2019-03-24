@@ -105,26 +105,31 @@ class UrlConverter extends Component {
             Convert URL
           </Button>
 
-          <p>
-            Short Url:{" "}
-            <a
-              rel="noopener noreferrer"
-              target="_blank"
-              href={this.state.shortUrl}
-            >
-              {this.state.shortUrl}
-            </a>
-          </p>
-          <p>
-            Long Url:{" "}
-            <a
-              rel="noopener noreferrer"
-              target="_blank"
-              href={this.state.longUrl}
-            >
-              {this.state.longUrl}
-            </a>
-          </p>
+          {this.state.shortUrl &&
+            this.state.longUrl && (
+              <div>
+                <p>
+                  Short Url:{" "}
+                  <a
+                    rel="noopener noreferrer"
+                    target="_blank"
+                    href={this.state.shortUrl}
+                  >
+                    {this.state.shortUrl}
+                  </a>
+                </p>
+                <p>
+                  Long Url:{" "}
+                  <a
+                    rel="noopener noreferrer"
+                    target="_blank"
+                    href={this.state.longUrl}
+                  >
+                    {this.state.longUrl}
+                  </a>
+                </p>
+              </div>
+            )}
         </Typography>
       </React.Fragment>
     );
