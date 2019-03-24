@@ -13,7 +13,7 @@ class UrlsController {
         success: "false",
         errorMessage: "Short URL needs to start with 'koble.jobs/'."
       });
-    } else if (req.body.longUrl.split("koble.jobs/")[1].length < 1) {
+    } else if (req.query.shortUrl.split("koble.jobs/")[1].length < 1) {
       return res.status(400).json({
         success: "false",
         errorMessage:
