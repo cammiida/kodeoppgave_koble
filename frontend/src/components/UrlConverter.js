@@ -19,6 +19,7 @@ class UrlConverter extends Component {
 
   generateShortUrl() {
     const body = { longUrl: this.input.current.value };
+    console.log(body);
     fetch("/api/v1/url", {
       method: "POST",
       headers: {
@@ -89,6 +90,11 @@ class UrlConverter extends Component {
               id="my-input"
               aria-describedby="my-helper-text"
               inputRef={this.input}
+              onKeyPress={ev => {
+                if (ev.key === "Enter") {
+                  this.handleSubmit(ev);
+                }
+              }}
               startAdornment={
                 <InputAdornment position="start">http://</InputAdornment>
               }
