@@ -31,9 +31,15 @@ class UrlsController {
     const base = alphabet.length;
 
     const shortUrl = req.query.shortUrl;
-
     const shortCodeArray = shortUrl.split("/");
-    const shortCode = shortCodeArray[shortCodeArray.length - 1].trim();
+
+    // Find shortCode
+    let shortCode;
+    if (!shortCodeArray[shortCodeArray - 1]) {
+      shortCode = shortCodeArray[shortCodeArray.length - 2].trim();
+    } else {
+      shortCode = shortCodeArray[shortCodeArray.length - 1].trim();
+    }
 
     // Find index of each letter in shortCode
     let digits = [];
@@ -79,16 +85,15 @@ class UrlsController {
   }
 
   generateShortUrl(req, res) {
+    let longUrl = req.body.longUrl;
     let responseObject;
-    if (!req.body.longUrl) {
+    if (!longUrl) {
       res.statusCode = 400;
       responseObject = {
         success: "false",
         errorMessage: "Long URL is required."
       };
-    } else if (
-      !req.body.longUrl.startsWith("koble.co/companies/koble/postings/")
-    ) {
+    } else if (!longUrl.startsWith("koble.co/companies/koble/postings/")) {
       res.statusCode = 400;
       responseObject = {
         success: "false",
@@ -96,7 +101,7 @@ class UrlsController {
           "Long URL needs to start with 'koble.co/companies/koble/postings/'."
       };
     } else if (
-      req.body.longUrl.split("koble.co/companies/koble/postings/")[1].length < 1
+      longUrl.split("koble.co/companies/koble/postings/")[1].length < 1
     ) {
       res.statusCode = 400;
       responseObject = {
@@ -104,66 +109,68 @@ class UrlsController {
         errorMessage:
           "Long URL needs to start with 'koble.co/companies/koble/postings/' and contain URL code."
       };
-    }
-
-    const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".split(
-      ""
-    );
-    const base = alphabet.length;
-    const longUrl = req.body.longUrl;
-
-    // Find id in db of long url specified
-    let id;
-    db.map(url => {
-      if (url.longUrl === longUrl) {
-        id = url.id;
-      }
-    });
-
-    // If no entry found, set id to be the next id in the db
-    let tempId = id;
-    if (!tempId) {
-      tempId = db.length + 1;
-    }
-
-    // Find the modulo of num with 62, find the corresponding
-    // letter in the alphabet, and add it to the code string.
-    // Then dividing num with 62.
-    // Repeat until num is 0.
-    let num = tempId;
-    let s = "";
-    while (num > 0) {
-      s += alphabet[num % base];
-      num = Math.floor(num / base);
-    }
-
-    // Add code string to first part of url
-    const shortUrl = "www.koble.jobs/" + s;
-
-    // If there was no entry in the database, make new entry object and add to db.
-    if (!id) {
-      const url = {
-        id: tempId,
-        longUrl
-      };
-
-      db.push(url);
-      res.statusCode = 201;
-      responseObject = {
-        success: "true",
-        message: "Created entry for long URL and made short URL.",
-        shortUrl,
-        longUrl
-      };
     } else {
-      // If there was an entry in the db for the longUrl, return 200
-      res.statusCode = 200;
-      responseObject = {
-        success: "true",
-        message: "Found entry for long URL and made short URL.",
-        shortUrl,
-        longUrl
-      };
+      if (longUrl[longUrl.length - 1] !== "/") {
+        longUrl += "/";
+      }
+      const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".split(
+        ""
+      );
+      const base = alphabet.length;
+
+      // Find id in db of long url specified
+      let id;
+      db.map(url => {
+        if (url.longUrl === longUrl) {
+          id = url.id;
+        }
+      });
+
+      // If no entry found, set id to be the next id in the db
+      let tempId = id;
+      if (!tempId) {
+        tempId = db.length + 1;
+      }
+
+      // Find the modulo of num with 62, find the corresponding
+      // letter in the alphabet, and add it to the code string.
+      // Then dividing num with 62.
+      // Repeat until num is 0.
+      let num = tempId;
+      let s = "";
+      while (num > 0) {
+        s += alphabet[num % base];
+        num = Math.floor(num / base);
+      }
+
+      // Add code string to first part of url
+      const shortUrl = "koble.jobs/" + s;
+
+      // If there was no entry in the database, make new entry object and add to db.
+      if (!id) {
+        const url = {
+          id: tempId,
+          longUrl
+        };
+
+        db.push(url);
+        res.statusCode = 201;
+        responseObject = {
+          success: "true",
+          message: "Created entry for long URL and made short URL.",
+          shortUrl,
+          longUrl
+        };
+      } else {
+        // If there was an entry in the db for the longUrl, return 200
+        res.statusCode = 200;
+        responseObject = {
+          success: "true",
+          message: "Found entry for long URL and made short URL.",
+          shortUrl,
+          longUrl
+        };
+      }
     }
 
     res.send(responseObject);
