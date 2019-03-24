@@ -3,7 +3,9 @@ import React, { Component } from "react";
 import Button from "@material-ui/core/Button";
 import Input from "@material-ui/core/Input";
 import InputLabel from "@material-ui/core/InputLabel";
+import InputAdornment from "@material-ui/core/InputAdornment";
 import FormControl from "@material-ui/core/FormControl";
+import FormHelperText from "@material-ui/core/FormHelperText";
 import Typography from "@material-ui/core/Typography";
 
 class UrlConverter extends Component {
@@ -12,7 +14,7 @@ class UrlConverter extends Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     this.input = React.createRef();
 
-    this.state = { shortUrl: "", longUrl: "" };
+    this.state = { shortUrl: "", longUrl: "", errorMessage: "" };
   }
 
   generateShortUrl() {
@@ -26,7 +28,11 @@ class UrlConverter extends Component {
     })
       .then(response => response.json())
       .then(res =>
-        this.setState({ shortUrl: res.shortUrl, longUrl: res.longUrl })
+        this.setState({
+          shortUrl: res.shortUrl,
+          longUrl: res.longUrl,
+          errorMessage: res.errorMessage
+        })
       );
   }
 
@@ -35,12 +41,17 @@ class UrlConverter extends Component {
     fetch(url, {
       method: "GET",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        Accept: "application/json"
       }
     })
       .then(response => response.json())
       .then(res =>
-        this.setState({ shortUrl: res.shortUrl, longUrl: res.longUrl })
+        this.setState({
+          shortUrl: res.shortUrl,
+          longUrl: res.longUrl,
+          errorMessage: res.errorMessage
+        })
       );
   }
 
@@ -57,7 +68,13 @@ class UrlConverter extends Component {
     return (
       <React.Fragment>
         <Typography component="div">
-          <FormControl>
+          <FormControl
+            style={{
+              margin: "10vh",
+              display: "flex",
+              flexWrap: "wrap"
+            }}
+          >
             <InputLabel htmlFor="my-input">
               {this.props.longUrl ? "Input long url" : "Input short url"}
             </InputLabel>
@@ -65,12 +82,24 @@ class UrlConverter extends Component {
               id="my-input"
               aria-describedby="my-helper-text"
               inputRef={this.input}
+              startAdornment={
+                <InputAdornment position="start">http://</InputAdornment>
+              }
             />
-            <Button onClick={this.handleSubmit}>Submit</Button>
+            <FormHelperText style={{ color: "red" }}>
+              {this.state.errorMessage}
+            </FormHelperText>
           </FormControl>
+          <Button
+            onClick={this.handleSubmit}
+            variant="contained"
+            color="primary"
+          >
+            Convert URL
+          </Button>
 
           <p>
-            Short Url:
+            Short Url:{" "}
             <a
               rel="noopener noreferrer"
               target="_blank"
@@ -80,7 +109,7 @@ class UrlConverter extends Component {
             </a>
           </p>
           <p>
-            Long Url:
+            Long Url:{" "}
             <a
               rel="noopener noreferrer"
               target="_blank"

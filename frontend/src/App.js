@@ -1,6 +1,4 @@
 import React, { Component } from "react";
-//import logo from "./logo.svg";
-import "./App.css";
 
 //import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
@@ -38,9 +36,7 @@ class App extends Component {
 
     return (
       <NoSsr>
-        <div className="App">
-          <header className="App-header" />
-
+        <div className="App" style={{ textAlign: "center" }}>
           <AppBar position="static" color="default">
             <Tabs
               variant="fullWidth"

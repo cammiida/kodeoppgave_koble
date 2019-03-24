@@ -6,12 +6,12 @@ class UrlsController {
     if (!req.query.shortUrl) {
       return res.status(400).json({
         success: "false",
-        message: "shortUrl is required"
+        errorMessage: "shortUrl is required"
       });
-    } else if (!shortUrl.includes("www.koble.jobs/")) {
+    } else if (!req.query.shortUrl.includes("www.koble.jobs/")) {
       return res.status(400).json({
         success: "false",
-        message: "shortUrl needs to contain 'www.koble.jobs/"
+        errorMessage: "shortUrl needs to contain 'www.koble.jobs/' "
       });
     }
 
@@ -55,7 +55,7 @@ class UrlsController {
     // If no entry found in db, return 404 not found
     return res.status(404).json({
       success: "false",
-      message: "longUrl not found"
+      errorMessage: "longUrl not found"
     });
   }
 
@@ -63,14 +63,14 @@ class UrlsController {
     if (!req.body.longUrl) {
       return res.status(400).json({
         success: "false",
-        message: "longUrl is required"
+        errorMessage: "longUrl is required"
       });
     } else if (
       !req.body.longUrl.includes("www.koble.co/companies/koble/postings/")
     ) {
       return res.status(400).json({
         success: "false",
-        message:
+        errorMessage:
           "longUrl needs to contain 'www.koble.co/companies/koble/postings/'"
       });
     }
