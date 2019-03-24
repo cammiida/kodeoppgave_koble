@@ -4,25 +4,31 @@ import db from "../db/db";
 class UrlsController {
   getLongUrl(req, res) {
     let responseObject;
-    if (!req.query.shortUrl) {
+    let shortUrl = req.query.shortUrl;
+    if (!shortUrl) {
       res.statusCode = 400;
       responseObject = {
         success: "false",
         errorMessage: "Short URL is required."
       };
-    } else if (!req.query.shortUrl.startsWith("koble.jobs/")) {
+    } else if (!shortUrl.startsWith("koble.jobs/")) {
       res.statusCode = 400;
       responseObject = {
         success: "false",
         errorMessage: "Short URL needs to start with 'koble.jobs/'."
       };
-    } else if (req.query.shortUrl.split("koble.jobs/")[1].length < 1) {
+    } else if (shortUrl.split("koble.jobs/")[1].length < 1) {
       res.statusCode = 400;
       responseObject = {
         success: "false",
         errorMessage:
           "Short URL needs to start with 'koble.jobs/' and contain URL code."
       };
+    } else {
+      // Trim off last backslash if there is any
+      if (shortUrl[shortUrl.length - 1] === "/") {
+        shortUrl = shortUrl.slice(0, -1);
+      }
     }
 
     const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".split(
@@ -30,16 +36,10 @@ class UrlsController {
     );
     const base = alphabet.length;
 
-    const shortUrl = req.query.shortUrl;
     const shortCodeArray = shortUrl.split("/");
 
     // Find shortCode
-    let shortCode;
-    if (!shortCodeArray[shortCodeArray - 1]) {
-      shortCode = shortCodeArray[shortCodeArray.length - 2].trim();
-    } else {
-      shortCode = shortCodeArray[shortCodeArray.length - 1].trim();
-    }
+    const shortCode = shortCodeArray[shortCodeArray.length - 1].trim();
 
     // Find index of each letter in shortCode
     let digits = [];
@@ -73,7 +73,6 @@ class UrlsController {
 
     // If no entry found in db, return 404 not found
     if (!found) {
-      console.log();
       res.statusCode = 404;
       responseObject = {
         success: "false",
