@@ -3,22 +3,26 @@ import db from "../db/db";
 
 class UrlsController {
   getLongUrl(req, res) {
+    let responseObject;
     if (!req.query.shortUrl) {
-      return res.status(400).json({
+      res.statusCode = 400;
+      responseObject = {
         success: "false",
         errorMessage: "Short URL is required."
-      });
+      };
     } else if (!req.query.shortUrl.startsWith("koble.jobs/")) {
-      return res.status(400).json({
+      res.statusCode = 400;
+      responseObject = {
         success: "false",
         errorMessage: "Short URL needs to start with 'koble.jobs/'."
-      });
+      };
     } else if (req.query.shortUrl.split("koble.jobs/")[1].length < 1) {
-      return res.status(400).json({
+      res.statusCode = 400;
+      responseObject = {
         success: "false",
         errorMessage:
           "Short URL needs to start with 'koble.jobs/' and contain URL code."
-      });
+      };
     }
 
     const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".split(
@@ -47,46 +51,59 @@ class UrlsController {
     });
 
     // Find entry in database with the calculated id
+    let found = false;
     db.map(url => {
       if (url.id === id) {
-        return res.status(200).json({
+        found = true;
+        res.statusCode = 200;
+        responseObject = {
           success: "true",
           message: "Long URL found from short URL.",
           shortUrl: shortUrl,
           longUrl: url.longUrl
-        });
+        };
       }
     });
 
     // If no entry found in db, return 404 not found
-    return res.status(404).json({
-      success: "false",
-      errorMessage: "Long URL not found."
-    });
+    if (!found) {
+      console.log();
+      res.statusCode = 404;
+      responseObject = {
+        success: "false",
+        errorMessage: "Long URL not found."
+      };
+    }
+
+    res.send(responseObject);
   }
 
   generateShortUrl(req, res) {
+    let responseObject;
     if (!req.body.longUrl) {
-      return res.status(400).json({
+      res.statusCode = 400;
+      responseObject = {
         success: "false",
         errorMessage: "Long URL is required."
-      });
+      };
     } else if (
       !req.body.longUrl.startsWith("koble.co/companies/koble/postings/")
     ) {
-      return res.status(400).json({
+      res.statusCode = 400;
+      responseObject = {
         success: "false",
         errorMessage:
           "Long URL needs to start with 'koble.co/companies/koble/postings/'."
-      });
+      };
     } else if (
       req.body.longUrl.split("koble.co/companies/koble/postings/")[1].length < 1
     ) {
-      return res.status(400).json({
+      res.statusCode = 400;
+      responseObject = {
         success: "false",
         errorMessage:
           "Long URL needs to start with 'koble.co/companies/koble/postings/' and contain URL code."
-      });
+      };
     }
 
     const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".split(
@@ -131,22 +148,25 @@ class UrlsController {
       };
 
       db.push(url);
-
-      res.status(201).json({
+      res.statusCode = 201;
+      responseObject = {
         success: "true",
-        message: "Created entry for longUrl and made short URL.",
+        message: "Created entry for long URL and made short URL.",
         shortUrl,
         longUrl
-      });
+      };
     } else {
       // If there was an entry in the db for the longUrl, return 200
-      res.status(200).json({
+      res.statusCode = 200;
+      responseObject = {
         success: "true",
-        message: "Found entry for longUrl and made short URL.",
+        message: "Found entry for long URL and made short URL.",
         shortUrl,
         longUrl
-      });
+      };
     }
+
+    res.send(responseObject);
   }
 
   // Get all entries in the db
