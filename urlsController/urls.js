@@ -8,10 +8,16 @@ class UrlsController {
         success: "false",
         errorMessage: "shortUrl is required"
       });
-    } else if (!req.query.shortUrl.includes("www.koble.jobs/")) {
+    } else if (!req.query.shortUrl.startsWith("koble.jobs/")) {
       return res.status(400).json({
         success: "false",
-        errorMessage: "shortUrl needs to contain 'www.koble.jobs/' "
+        errorMessage: "shortUrl needs to start with 'koble.jobs/' "
+      });
+    } else if (req.body.longUrl.split("koble.jobs/")[1].length < 1) {
+      return res.status(400).json({
+        success: "false",
+        errorMessage:
+          "Long URL needs to start with 'koble.jobs/' and contain URL code."
       });
     }
 
@@ -66,12 +72,20 @@ class UrlsController {
         errorMessage: "longUrl is required"
       });
     } else if (
-      !req.body.longUrl.includes("www.koble.co/companies/koble/postings/")
+      !req.body.longUrl.startsWith("koble.co/companies/koble/postings/")
     ) {
       return res.status(400).json({
         success: "false",
         errorMessage:
-          "longUrl needs to contain 'www.koble.co/companies/koble/postings/'"
+          "Long URL needs to start with 'koble.co/companies/koble/postings/'"
+      });
+    } else if (
+      req.body.longUrl.split("koble.co/companies/koble/postings/")[1].length < 1
+    ) {
+      return res.status(400).json({
+        success: "false",
+        errorMessage:
+          "Long URL needs to start with 'koble.co/companies/koble/postings/' and contain URL code."
       });
     }
 
@@ -106,12 +120,10 @@ class UrlsController {
       num = Math.floor(num / base);
     }
 
-    //s = s.split("").join("");
-
     // Add code string to first part of url
     const shortUrl = "www.koble.jobs/" + s;
 
-    // If there was no entry in the database, make new entry and add to db.
+    // If there was no entry in the database, make new entry object and add to db.
     if (!id) {
       const url = {
         id: tempId,
@@ -126,15 +138,15 @@ class UrlsController {
         shortUrl,
         longUrl
       });
+    } else {
+      // If there was an entry in the db for the longUrl, return 200
+      res.status(200).json({
+        success: "true",
+        message: "Found entry for longUrl and made shortUrl",
+        shortUrl,
+        longUrl
+      });
     }
-
-    // If there was an entry in the db for the longUrl, return 200
-    res.status(200).json({
-      success: "true",
-      message: "Found entry for longUrl and made shortUrl",
-      shortUrl,
-      longUrl
-    });
   }
 
   // Get all entries in the db
