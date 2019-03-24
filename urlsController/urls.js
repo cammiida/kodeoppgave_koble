@@ -6,18 +6,18 @@ class UrlsController {
     if (!req.query.shortUrl) {
       return res.status(400).json({
         success: "false",
-        errorMessage: "shortUrl is required"
+        errorMessage: "Short URL is required."
       });
     } else if (!req.query.shortUrl.startsWith("koble.jobs/")) {
       return res.status(400).json({
         success: "false",
-        errorMessage: "shortUrl needs to start with 'koble.jobs/' "
+        errorMessage: "Short URL needs to start with 'koble.jobs/'."
       });
     } else if (req.body.longUrl.split("koble.jobs/")[1].length < 1) {
       return res.status(400).json({
         success: "false",
         errorMessage:
-          "Long URL needs to start with 'koble.jobs/' and contain URL code."
+          "Short URL needs to start with 'koble.jobs/' and contain URL code."
       });
     }
 
@@ -51,7 +51,7 @@ class UrlsController {
       if (url.id === id) {
         return res.status(200).json({
           success: "true",
-          message: "longUrl found from shortUrl",
+          message: "Long URL found from short URL.",
           shortUrl: shortUrl,
           longUrl: url.longUrl
         });
@@ -61,7 +61,7 @@ class UrlsController {
     // If no entry found in db, return 404 not found
     return res.status(404).json({
       success: "false",
-      errorMessage: "longUrl not found"
+      errorMessage: "Long URL not found."
     });
   }
 
@@ -69,7 +69,7 @@ class UrlsController {
     if (!req.body.longUrl) {
       return res.status(400).json({
         success: "false",
-        errorMessage: "longUrl is required"
+        errorMessage: "Long URL is required."
       });
     } else if (
       !req.body.longUrl.startsWith("koble.co/companies/koble/postings/")
@@ -77,7 +77,7 @@ class UrlsController {
       return res.status(400).json({
         success: "false",
         errorMessage:
-          "Long URL needs to start with 'koble.co/companies/koble/postings/'"
+          "Long URL needs to start with 'koble.co/companies/koble/postings/'."
       });
     } else if (
       req.body.longUrl.split("koble.co/companies/koble/postings/")[1].length < 1
@@ -134,7 +134,7 @@ class UrlsController {
 
       res.status(201).json({
         success: "true",
-        message: "Created entry for longUrl and made shortUrl",
+        message: "Created entry for longUrl and made short URL.",
         shortUrl,
         longUrl
       });
@@ -142,7 +142,7 @@ class UrlsController {
       // If there was an entry in the db for the longUrl, return 200
       res.status(200).json({
         success: "true",
-        message: "Found entry for longUrl and made shortUrl",
+        message: "Found entry for longUrl and made short URL.",
         shortUrl,
         longUrl
       });
@@ -153,7 +153,7 @@ class UrlsController {
   getAllUrls(req, res) {
     return res.status(200).json({
       success: "true",
-      message: "urls derived successfully",
+      message: "URLs derived successfully.",
       urls: db
     });
   }
